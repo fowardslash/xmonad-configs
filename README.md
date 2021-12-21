@@ -9,3 +9,5 @@ Install picom, stalonetray, xmobar, xmonad, xmonad-contrib and nitrogen.
 ![2021-12-21-081458_1920x967_scrot](https://user-images.githubusercontent.com/68984861/146854195-f9d35bca-ba68-42ea-a350-3d428c48434b.png)
 
 ![2021-12-21-081525_1920x967_scrot](https://user-images.githubusercontent.com/68984861/146854232-ccf77af3-dcb1-4ca5-acf9-069be68a5179.png)
+
+oh shoot i forgot to add neofetch
