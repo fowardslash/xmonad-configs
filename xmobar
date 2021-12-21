@@ -1,0 +1,123 @@
+Config { 
+
+   -- appearance
+     font =         "xft:Anonymice Nerd Font Mono:size=11:regular:antialias=true"
+   , bgColor =      "#282828"
+   , fgColor =      "#ebdbb2"
+   , position =     Static { xpos = 0, ypos = 0, width = 1844, height = 20 }
+   , border =       NoBorder
+   , borderColor =  "#928374"
+
+   -- layout
+   , sepChar =  "%"   -- delineator between plugin names and straight text
+   , alignSep = "}{"  -- separator between left-right alignment
+   , template = "|| %StdinReader% || %battery% | %multicpu% | %memory% | %dynnetwork% }{ %date% || %kbd% ||"
+
+   -- general behavior
+   , lowerOnStart =     True    -- send to bottom of window stack on start
+   , hideOnStart =      False   -- start with window unmapped (hidden)
+   , allDesktops =      True    -- show on all desktops
+   , overrideRedirect = True    -- set the Override Redirect flag (Xlib)
+   , pickBroadest =     False   -- choose widest display (multi-monitor)
+   , persistent =       True    -- enable/disable hiding (True = disabled)
+
+   -- plugins
+   --   Numbers can be automatically colored according to their value. xmobar
+   --   decides color based on a three-tier/two-cutoff system, controlled by
+   --   command options:
+   --     --Low sets the low cutoff
+   --     --High sets the high cutoff
+   --
+   --     --low sets the color below --Low cutoff
+   --     --normal sets the color between --Low and --High cutoffs
+   --     --High sets the color above --High cutoff
+   --
+   --   The --template option controls how the plugin is displayed. Text
+   --   color can be set by enclosing in <fc></fc> tags. For more details
+   --   see http://projects.haskell.org/xmobar/#system-monitor-plugins.
+   , commands = 
+
+        -- weather monitor
+        [ Run WeatherX "VVTS"
+                             [ ("clear", "滛 Clear")
+                             , ("sunny", "杖 Sunny")
+                             , ("mostly clear", " Mostly Clear")
+                             , ("mostly sunny", " Mostly Sunny")
+                             , ("fair", "摒 Fair")
+                             , ("cloudy", "摒 Cloudy")
+                             , ("overcast", " Overcase")
+                             , ("partly cloudy", " Partly cloudy")
+                             , ("mostly cloudy", " Mostly cloudy")
+                             , ("considerable cloudiness", " Considerable Cloudiness")
+                             ]
+                             ["-t", "<fn=2><skyConditionS></fn> : <tempC>° : <rh>%  : <windKmh> (<hour>)"
+                                          , "-L","10", "-H", "25", "--normal", "black"
+                                          , "--high", "lightgoldenrod4", "--low", "darkseagreen4"] 18000
+
+        -- network activity monitor (dynamic interface resolution)
+        , Run DynNetwork     [ "--template" , " <dev>: <tx>kB/s|<rx>kB/s"
+                             , "--Low"      , "1000"       -- units: B/s
+                             , "--High"     , "5000"       -- units: B/s
+                             , "--low"      , "#b8bb26"
+                             , "--normal"   , "#d65d0e"
+                             , "--high"     , "#cc241d"
+                             ] 10
+
+        -- cpu activity monitor
+        , Run MultiCpu       [ "--template" , "﬙ <total0>%"
+                             , "--Low"      , "50"         -- units: %
+                             , "--High"     , "85"         -- units: %
+                             , "--low"      , "#b8bb26"
+                             , "--normal"   , "#d65d0e"
+                             , "--high"     , "#cc241d"
+                             ] 10
+
+        -- cpu core temperature monitor
+        , Run CoreTemp       [ "--template" , " <core0>°C "
+                             , "--Low"      , "70"        -- units: °C
+                             , "--High"     , "80"        -- units: °C
+                             , "--low"      , "#b8bb26"
+                             , "--normal"   , "#d65d0e"
+                             , "--high"     , "#cc241d"
+                             ] 50
+                          
+        -- memory usage monitor
+        , Run Memory         [ "--template" ," <usedratio>%"
+                             , "--Low"      , "20"        -- units: %
+                             , "--High"     , "90"        -- units: %
+                             , "--low"      , "#b8bb26"
+                             , "--normal"   , "#d65d0e"
+                             , "--high"     , "#cc241d"
+                             ] 10
+
+        -- battery monitor
+        , Run Battery        [ "--template" , " <acstatus>"
+                             , "--Low"      , "10"        -- units: %
+                             , "--High"     , "80"        -- units: %
+                             , "--low"      , "#cc241d"
+                             , "--normal"   , "#d65d0e"
+                             , "--high"     , "#b8bb26"
+
+                             , "--" -- battery specific options
+                                       -- discharging status
+                                       , "-o"	, "<left>%"
+                                       -- AC "on" status
+                                       , "-O"	, "<fc=#d65d0e>Charging</fc>"
+                                       -- charged status
+                                       , "-i"	, "<fc=#b8bb26>Charged</fc>"
+                             ] 50
+
+        -- time and date indicator 
+        --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
+        , Run Date           "<fc=#a89984>%F (%a) %T</fc>" "date" 10
+
+        -- keyboard layout indicator
+        , Run Kbd            [ ("us(dvorak)" , "<fc=#00008B>DV</fc>")
+                             , ("us"         , "<fc=#cc241d>US</fc>")
+                             ]
+        , Run StdinReader
+        , Run Uptime [ "--template" , "ﯦ <days>d : <hours>h : <minutes>m" ] 10
+        , Run DiskIO [("/", " /dev/sda1: <read> <write>"), ("sdb1", "<total>")] [] 10
+        , Run Com "uname" ["-r", "-s"] "" 0
+        ] 
+   }
